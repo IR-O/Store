@@ -1,1 +1,324 @@
-.
+{{ 'product.css' | asset_url | stylesheet_tag }}
+
+<div class="product-page" data-section-id="{{ section.id }}" data-section-type="product">
+  <div class="product-container">
+    <!-- Product Images -->
+    <div class="product-images">
+      <div class="main-image">
+        {% if product.featured_image %}
+          <img id="mainProductImage"
+               src="{{ product.featured_image | image_url: width: 800 }}"
+               alt="{{ product.featured_image.alt }}"
+               loading="lazy"
+               width="800"
+               height="800">
+        {% endif %}
+      </div>
+      
+      {% if product.images.size > 1 %}
+        <div class="thumbnail-images">
+          {% for image in product.images %}
+            <div class="thumbnail {% if forloop.first %}active{% endif %}" 
+                 data-image-index="{{ forloop.index0 }}">
+              <img src="{{ image | image_url: width: 100 }}"
+                   alt="{{ image.alt }}"
+                   loading="lazy"
+                   width="100"
+                   height="100">
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <div class="product-header">
+        <h1 class="product-title">{{ product.title }}</h1>
+        <div class="product-price">
+          <span class="current-price">{{ product.price | money_without_trailing_zeros }}</span>
+          {% if product.compare_at_price > product.price %}
+            <span class="original-price">{{ product.compare_at_price | money_without_trailing_zeros }}</span>
+            <span class="sale-badge">Sale</span>
+          {% endif %}
+        </div>
+        
+        <div class="product-rating">
+          <div class="stars">★★★★★</div>
+          <span class="review-count">(0 reviews)</span>
+        </div>
+      </div>
+
+      <div class="product-description">
+        {{ product.description }}
+      </div>
+
+      <!-- Variant Selector -->
+      {% if product.variants.size > 1 %}
+        <div class="variant-selector">
+          <label class="variant-label">Size:</label>
+          <div class="variant-options">
+            {% for variant in product.variants %}
+              <div class="variant-option {% if variant.available %}available{% else %}sold-out{% endif %}"
+                   data-variant-id="{{ variant.id }}"
+                   data-price="{{ variant.price | money_without_trailing_zeros }}">
+                <input type="radio" 
+                       name="variant" 
+                       id="variant-{{ variant.id }}" 
+                       value="{{ variant.id }}"
+                       {% if forloop.first %}checked{% endif %}
+                       {% unless variant.available %}disabled{% endunless %}>
+                <label for="variant-{{ variant.id }}">
+                  {{ variant.title }} - {{ variant.price | money_without_trailing_zeros }}
+                  {% unless variant.available %}(Sold Out){% endunless %}
+                </label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Add to Cart -->
+      <form method="post" action="/cart/add" class="product-form" id="product-form">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        
+        <div class="quantity-selector">
+          <label for="quantity">Quantity:</label>
+          <div class="quantity-input">
+            <button type="button" class="quantity-minus">-</button>
+            <input type="number" 
+                   id="quantity" 
+                   name="quantity" 
+                   value="1" 
+                   min="1" 
+                   max="10">
+            <button type="button" class="quantity-plus">+</button>
+          </div>
+        </div>
+
+        <button type="submit" 
+                name="add" 
+                class="add-to-cart-button"
+                {% unless product.available %}disabled{% endunless %}>
+          {% if product.available %}
+            Add to Cart - {{ product.price | money_without_trailing_zeros }}
+          {% else %}
+            Sold Out
+          {% endif %}
+        </button>
+        
+        <div class="payment-info">
+          <p>🛡️ Secure checkout</p>
+          <p>🚚 Free shipping on orders over ₹2000</p>
+          <p>↩️ 30-day return policy</p>
+        </div>
+      </form>
+
+      <!-- Product Details -->
+      <div class="product-details-accordion">
+        <div class="accordion-item">
+          <button class="accordion-header">
+            <span>Fragrance Notes</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <ul>
+              <li><strong>Top Notes:</strong> {{ product.metafields.custom.top_notes | default: 'Bergamot, Lemon, Orange' }}</li>
+              <li><strong>Middle Notes:</strong> {{ product.metafields.custom.middle_notes | default: 'Jasmine, Rose, Lily' }}</li>
+              <li><strong>Base Notes:</strong> {{ product.metafields.custom.base_notes | default: 'Sandalwood, Musk, Amber' }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">
+            <span>How to Use</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <p>Spray on pulse points - wrists, neck, and behind ears. For best results, apply to moisturized skin.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">
+            <span>Shipping & Returns</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content">
+            <p>Free shipping on all orders over ₹2000. Delivery within 3-7 business days across India. 30-day return policy for unopened products.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {% if section.settings.show_related_products %}
+    <div class="related-products">
+      <h2 class="section-title">You May Also Like</h2>
+      <div class="products-grid">
+        {% assign related_collection = product.collections.first %}
+        {% if related_collection %}
+          {% for related_product in related_collection.products limit: 4 %}
+            {% unless related_product.handle == product.handle %}
+              {% render 'product-card', product: related_product %}
+            {% endunless %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const productForm = document.getElementById('product-form');
+    const variantOptions = document.querySelectorAll('.variant-option input');
+    const mainImage = document.getElementById('mainProductImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const quantityInput = document.getElementById('quantity');
+    const quantityMinus = document.querySelector('.quantity-minus');
+    const quantityPlus = document.querySelector('.quantity-plus');
+    const addToCartButton = document.querySelector('.add-to-cart-button');
+    const variantIdInput = productForm.querySelector('input[name="id"]');
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    // Handle variant selection
+    variantOptions.forEach(option => {
+      option.addEventListener('change', function() {
+        const variantId = this.value;
+        variantIdInput.value = variantId;
+        
+        // Update price
+        const variantOption = this.closest('.variant-option');
+        const price = variantOption.dataset.price;
+        
+        if (price && addToCartButton) {
+          const baseText = addToCartButton.textContent.split('-')[0].trim();
+          addToCartButton.textContent = `${baseText} - ${price}`;
+        }
+      });
+    });
+
+    // Handle thumbnail clicks
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', function() {
+        const index = this.dataset.imageIndex;
+        
+        // Update active thumbnail
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update main image
+        if (mainImage) {
+          const productImages = {{ product.images | json }};
+          if (productImages[index]) {
+            mainImage.src = productImages[index].src;
+            mainImage.alt = productImages[index].alt;
+          }
+        }
+      });
+    });
+
+    // Handle quantity changes
+    quantityMinus.addEventListener('click', function() {
+      let value = parseInt(quantityInput.value);
+      if (value > 1) {
+        quantityInput.value = value - 1;
+      }
+    });
+
+    quantityPlus.addEventListener('click', function() {
+      let value = parseInt(quantityInput.value);
+      if (value < 10) {
+        quantityInput.value = value + 1;
+      }
+    });
+
+    // Handle accordion
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const icon = this.querySelector('.accordion-icon');
+        
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+          icon.textContent = '+';
+        } else {
+          content.style.maxHeight = content.scrollHeight + 'px';
+          icon.textContent = '-';
+        }
+      });
+    });
+
+    // Handle form submission
+    productForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const originalText = addToCartButton.textContent;
+      
+      try {
+        addToCartButton.textContent = 'Adding...';
+        addToCartButton.disabled = true;
+        
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            items: [{
+              id: formData.get('id'),
+              quantity: parseInt(formData.get('quantity'))
+            }]
+          })
+        });
+        
+        if (response.ok) {
+          addToCartButton.textContent = 'Added to Cart!';
+          
+          // Update cart count
+          const cartCount = document.getElementById('cartCount');
+          if (cartCount) {
+            const currentCount = parseInt(cartCount.textContent);
+            cartCount.textContent = currentCount + parseInt(formData.get('quantity'));
+          }
+          
+          // Dispatch cart update event
+          document.dispatchEvent(new CustomEvent('cart:updated'));
+          
+          // Reset button after 2 seconds
+          setTimeout(() => {
+            addToCartButton.textContent = originalText;
+            addToCartButton.disabled = false;
+          }, 2000);
+        } else {
+          throw new Error('Failed to add to cart');
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        addToCartButton.textContent = 'Error';
+        setTimeout(() => {
+          addToCartButton.textContent = originalText;
+          addToCartButton.disabled = false;
+        }, 2000);
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product pages",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_related_products",
+      "label": "Show related products",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
