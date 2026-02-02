@@ -1,1 +1,454 @@
-.
+<style>
+  .featured-products {
+    padding: 8rem 0;
+    background-color: var(--color-background);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: var(--color-primary);
+  }
+
+  .section-description {
+    font-size: 1.6rem;
+    color: var(--color-text);
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.8;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 3rem;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .product-card {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  }
+
+  .product-image {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .product-card:hover .product-image img {
+    transform: scale(1.05);
+  }
+
+  .product-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--color-primary);
+    color: black;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 20px;
+    z-index: 2;
+  }
+
+  .product-info {
+    padding: 2rem;
+  }
+
+  .product-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--color-secondary);
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+    display: block;
+  }
+
+  .product-title:hover {
+    color: var(--color-primary);
+  }
+
+  .product-price {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .current-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+  }
+
+  .original-price {
+    font-size: 1.6rem;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .product-sizes {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .size-option {
+    padding: 0.5rem 1rem;
+    border: 2px solid #eee;
+    background: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+
+  .size-option:hover {
+    border-color: var(--color-primary);
+  }
+
+  .size-option.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: black;
+  }
+
+  .add-to-cart-button {
+    width: 100%;
+    padding: 1.2rem;
+    background-color: var(--color-primary);
+    color: black;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .add-to-cart-button:hover {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+
+  .view-all-button {
+    display: block;
+    width: 200px;
+    margin: 4rem auto 0;
+    padding: 1.5rem;
+    text-align: center;
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .view-all-button:hover {
+    background-color: var(--color-primary);
+    color: black;
+  }
+
+  @media screen and (max-width: 768px) {
+    .featured-products {
+      padding: 4rem 0;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 0 1rem;
+    }
+  }
+</style>
+
+<section class="featured-products">
+  <div class="section-header">
+    <h2 class="section-title">{{ section.settings.title | default: 'Featured Perfumes' }}</h2>
+    <p class="section-description">{{ section.settings.description | default: 'Discover our most exquisite scents' }}</p>
+  </div>
+
+  <div class="products-grid">
+    {% for product in collections[section.settings.collection].products limit: section.settings.product_limit %}
+      <div class="product-card" data-product-handle="{{ product.handle }}">
+        <div class="product-image">
+          <a href="{{ product.url }}">
+            {% if product.featured_image %}
+              {{ product.featured_image | image_url: width: 400 | image_tag:
+                loading: 'lazy',
+                width: product.featured_image.width,
+                height: product.featured_image.height,
+                alt: product.featured_image.alt
+              }}
+            {% else %}
+              <div style="background: #f5f5f5; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <span style="color: #999;">No image</span>
+              </div>
+            {% endif %}
+          </a>
+          {% if product.compare_at_price > product.price %}
+            <span class="product-badge">Sale</span>
+          {% endif %}
+        </div>
+
+        <div class="product-info">
+          <a href="{{ product.url }}" class="product-title">{{ product.title }}</a>
+          
+          <div class="product-price">
+            <span class="current-price">{{ product.price | money_without_trailing_zeros }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="original-price">{{ product.compare_at_price | money_without_trailing_zeros }}</span>
+            {% endif %}
+          </div>
+
+          <div class="product-sizes">
+            {% for variant in product.variants %}
+              <button 
+                class="size-option {% if forloop.first %}active{% endif %}" 
+                data-variant-id="{{ variant.id }}"
+                data-price="{{ variant.price | money_without_trailing_zeros }}"
+                data-available="{{ variant.available }}">
+                {{ variant.title }}
+              </button>
+            {% endfor %}
+          </div>
+
+          <form method="post" action="/cart/add" class="product-form">
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="add-to-cart-button" {% unless product.available %}disabled{% endunless %}>
+              {% if product.available %}
+                Add to Cart
+              {% else %}
+                Sold Out
+              {% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      {% for i in (1..4) %}
+        <div class="product-card">
+          <div class="product-image">
+            <div style="background: #f5f5f5; height: 100%;"></div>
+          </div>
+          <div class="product-info">
+            <div class="product-title">Sample Product {{ i }}</div>
+            <div class="product-price">
+              <span class="current-price">₹550</span>
+            </div>
+            <div class="product-sizes">
+              <button class="size-option active">30 ml</button>
+              <button class="size-option">50 ml</button>
+            </div>
+            <button class="add-to-cart-button">Add to Cart</button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+
+  {% if section.settings.show_view_all %}
+    <a href="{{ section.settings.view_all_link | default: '/collections/all' }}" class="view-all-button">
+      View All Products
+    </a>
+  {% endif %}
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle size selection
+    document.querySelectorAll('.size-option').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Remove active class from all buttons in the same product card
+        const productCard = this.closest('.product-card');
+        productCard.querySelectorAll('.size-option').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Update variant ID in form
+        const variantId = this.dataset.variantId;
+        const form = productCard.querySelector('.product-form');
+        const hiddenInput = form.querySelector('input[name="id"]');
+        hiddenInput.value = variantId;
+        
+        // Update price display
+        const priceElement = productCard.querySelector('.current-price');
+        if (priceElement && this.dataset.price) {
+          priceElement.textContent = this.dataset.price;
+        }
+        
+        // Update button state
+        const addToCartButton = productCard.querySelector('.add-to-cart-button');
+        if (addToCartButton) {
+          if (this.dataset.available === 'true') {
+            addToCartButton.textContent = 'Add to Cart';
+            addToCartButton.disabled = false;
+          } else {
+            addToCartButton.textContent = 'Sold Out';
+            addToCartButton.disabled = true;
+          }
+        }
+      });
+    });
+    
+    // Handle add to cart
+    document.querySelectorAll('.product-form').forEach(form => {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const addButton = this.querySelector('.add-to-cart-button');
+        const originalText = addButton.textContent;
+        
+        try {
+          addButton.textContent = 'Adding...';
+          addButton.disabled = true;
+          
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              items: [{
+                id: formData.get('id'),
+                quantity: parseInt(formData.get('quantity'))
+              }]
+            })
+          });
+          
+          if (response.ok) {
+            addButton.textContent = 'Added!';
+            
+            // Update cart count
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) {
+              const currentCount = parseInt(cartCount.textContent);
+              cartCount.textContent = currentCount + 1;
+            }
+            
+            // Dispatch cart update event
+            document.dispatchEvent(new CustomEvent('cart:updated'));
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+              addButton.textContent = originalText;
+              addButton.disabled = false;
+            }, 2000);
+          } else {
+            throw new Error('Failed to add to cart');
+          }
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          addButton.textContent = 'Error';
+          setTimeout(() => {
+            addButton.textContent = originalText;
+            addButton.disabled = false;
+          }, 2000);
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Featured Perfumes"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover our most exquisite scents"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Number of products to show",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' button",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}
