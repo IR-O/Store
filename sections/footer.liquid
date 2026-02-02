@@ -1,1 +1,213 @@
-m
+<style>
+  .footer {
+    background-color: var(--color-secondary);
+    color: white;
+    padding: 5rem 0 2rem;
+    margin-top: auto;
+  }
+
+  .footer-wrapper {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+
+  .footer-column-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    display: block;
+    transition: color 0.3s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-text {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-newsletter {
+    margin-top: 2rem;
+  }
+
+  .footer-newsletter-input {
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: white;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 1rem;
+  }
+
+  .footer-newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .footer-social-link {
+    color: white;
+    font-size: 1.6rem;
+    transition: color 0.3s ease;
+  }
+
+  .footer-social-link:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.4rem;
+  }
+
+  .payment-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 2rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    
+    .footer-wrapper {
+      padding: 0 1rem;
+    }
+  }
+</style>
+
+<footer class="footer">
+  <div class="footer-wrapper">
+    <div class="footer-grid">
+      <!-- Brand Column -->
+      <div class="footer-column">
+        <h3 class="footer-column-title">{{ shop.name }}</h3>
+        <p class="footer-text">
+          Luxury perfumes crafted with precision and passion. Experience the essence of elegance.
+        </p>
+        <div class="footer-social">
+          <a href="#" class="footer-social-link" aria-label="Facebook">📘</a>
+          <a href="#" class="footer-social-link" aria-label="Instagram">📷</a>
+          <a href="#" class="footer-social-link" aria-label="Twitter">🐦</a>
+          <a href="#" class="footer-social-link" aria-label="Pinterest">📌</a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-column">
+        <h3 class="footer-column-title">Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="/" class="footer-link">Home</a></li>
+          <li><a href="/collections/all" class="footer-link">Shop All</a></li>
+          <li><a href="/collections/men" class="footer-link">Men's Collection</a></li>
+          <li><a href="/collections/women" class="footer-link">Women's Collection</a></li>
+          <li><a href="/collections/unisex" class="footer-link">Unisex Collection</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="footer-column">
+        <h3 class="footer-column-title">Customer Service</h3>
+        <ul class="footer-links">
+          <li><a href="/pages/contact" class="footer-link">Contact Us</a></li>
+          <li><a href="/pages/shipping" class="footer-link">Shipping & Delivery</a></li>
+          <li><a href="/pages/returns" class="footer-link">Returns & Exchanges</a></li>
+          <li><a href="/pages/faq" class="footer-link">FAQ</a></li>
+          <li><a href="/policies/privacy-policy" class="footer-link">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="footer-column">
+        <h3 class="footer-column-title">Stay Updated</h3>
+        <p class="footer-text">
+          Subscribe to our newsletter for exclusive offers and new arrivals.
+        </p>
+        <div class="footer-newsletter">
+          <form id="footerNewsletterForm">
+            <input type="email" 
+                   class="footer-newsletter-input" 
+                   placeholder="Your email address" 
+                   required
+                   aria-label="Email address">
+            <button type="submit" class="button button--primary" style="width: 100%; max-width: 300px;">
+              Subscribe
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="footer-bottom">
+      <div class="payment-icons">
+        <span title="Visa">💳</span>
+        <span title="Mastercard">🏦</span>
+        <span title="Razorpay">💰</span>
+        <span title="PayPal">🔵</span>
+        <span title="Stripe">💸</span>
+      </div>
+      <p>&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. All rights reserved.</p>
+      <p>Prices in Indian Rupees (INR) | Online payments only</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.getElementById('footerNewsletterForm');
+    
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = this.querySelector('input[type="email"]').value;
+      
+      // Here you would typically send this to your email service
+      // For now, we'll just show a success message
+      alert('Thank you for subscribing to our newsletter!');
+      this.reset();
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": []
+}
+{% endschema %}
