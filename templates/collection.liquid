@@ -1,1 +1,268 @@
-m
+<style>
+  .collection-page {
+    padding: 4rem 0;
+  }
+
+  .collection-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 0 2rem;
+  }
+
+  .collection-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .collection-description {
+    font-size: 1.6rem;
+    color: var(--color-text);
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.8;
+  }
+
+  .collection-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--page-width);
+    margin: 0 auto 3rem;
+    padding: 0 2rem;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .collection-count {
+    font-size: 1.4rem;
+    color: var(--color-text);
+  }
+
+  .collection-filters {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .filter-select {
+    padding: 1rem 2rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: var(--color-text);
+    font-size: 1.4rem;
+    min-width: 200px;
+    cursor: pointer;
+  }
+
+  .view-options {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .view-option {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .view-option:hover {
+    border-color: var(--color-primary);
+  }
+
+  .view-option.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: black;
+  }
+
+  .collection-grid {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .collection-grid.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 3rem;
+  }
+
+  .collection-grid.list-view .product-card {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .collection-grid.list-view .product-image {
+    flex: 0 0 300px;
+    height: 300px;
+  }
+
+  .collection-grid.list-view .product-info {
+    flex: 1;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 5rem;
+    padding: 0 2rem;
+  }
+
+  .pagination-button {
+    padding: 1rem 2rem;
+    border: 1px solid #ddd;
+    background: white;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .pagination-button:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .pagination-button.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: black;
+  }
+
+  @media screen and (max-width: 768px) {
+    .collection-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .collection-filters {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-select {
+      width: 100%;
+    }
+
+    .collection-grid.list-view .product-card {
+      flex-direction: column;
+    }
+
+    .collection-grid.list-view .product-image {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="collection-page">
+  <div class="collection-header">
+    <h1 class="collection-title">{{ collection.title }}</h1>
+    {% if collection.description %}
+      <div class="collection-description">{{ collection.description }}</div>
+    {% endif %}
+  </div>
+
+  <div class="collection-controls">
+    <div class="collection-count">
+      {{ collection.products_count }} products
+    </div>
+
+    <div class="collection-filters">
+      <select class="filter-select" id="sort-by">
+        <option value="manual">Featured</option>
+        <option value="best-selling">Best Selling</option>
+        <option value="title-ascending">Alphabetically, A-Z</option>
+        <option value="title-descending">Alphabetically, Z-A</option>
+        <option value="price-ascending">Price, low to high</option>
+        <option value="price-descending">Price, high to low</option>
+        <option value="created-descending">Date, new to old</option>
+        <option value="created-ascending">Date, old to new</option>
+      </select>
+
+      <div class="view-options">
+        <button class="view-option active" data-view="grid" title="Grid view">▫️</button>
+        <button class="view-option" data-view="list" title="List view">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="collection-grid grid-view" id="products-grid">
+    {% for product in collection.products %}
+      {% render 'product-card', product: product %}
+    {% else %}
+      <p>No products found in this collection.</p>
+    {% endfor %}
+  </div>
+
+  {% if paginate.pages > 1 %}
+    <div class="pagination">
+      {% if paginate.previous %}
+        <a href="{{ paginate.previous.url }}" class="pagination-button">Previous</a>
+      {% endif %}
+
+      {% for part in paginate.parts %}
+        {% if part.is_link %}
+          <a href="{{ part.url }}" class="pagination-button">{{ part.title }}</a>
+        {% else %}
+          <span class="pagination-button active">{{ part.title }}</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if paginate.next %}
+        <a href="{{ paginate.next.url }}" class="pagination-button">Next</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortSelect = document.getElementById('sort-by');
+    const viewOptions = document.querySelectorAll('.view-option');
+    const productsGrid = document.getElementById('products-grid');
+    const currentSort = new URLSearchParams(window.location.search).get('sort_by');
+
+    // Set current sort option
+    if (currentSort) {
+      sortSelect.value = currentSort;
+    }
+
+    // Handle sort change
+    sortSelect.addEventListener('change', function() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', this.value);
+      window.location.href = url.toString();
+    });
+
+    // Handle view change
+    viewOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        const view = this.dataset.view;
+        
+        // Update active button
+        viewOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Change view
+        productsGrid.className = 'collection-grid ' + view + '-view';
+        
+        // Save preference to localStorage
+        localStorage.setItem('collectionView', view);
+      });
+    });
+
+    // Load saved view preference
+    const savedView = localStorage.getItem('collectionView') || 'grid';
+    const savedViewButton = document.querySelector(`.view-option[data-view="${savedView}"]`);
+    if (savedViewButton) {
+      savedViewButton.click();
+    }
+  });
+</script>
