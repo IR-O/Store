@@ -1,1 +1,10 @@
-m
+name: "Aristial Perfumes"
+version: "1.0.0"
+settings:
+  color_primary: "#d4af37"
+  color_secondary: "#000000"
+  color_background: "#ffffff"
+  color_text: "#333333"
+  typography:
+    body_font: "Montserrat"
+    heading_font: "Playfair Display"
