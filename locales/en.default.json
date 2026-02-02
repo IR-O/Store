@@ -1,1 +1,64 @@
-m
+{
+  "general": {
+    "shop": "Aristial",
+    "cart": "Cart",
+    "search": "Search",
+    "account": "Account",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "view_details": "View Details",
+      "description": "Description",
+      "specifications": "Specifications",
+      "reviews": "Reviews"
+    }
+  },
+  "collections": {
+    "all": "All Products",
+    "men": "Men's Collection",
+    "women": "Women's Collection",
+    "unisex": "Unisex Collection",
+    "sort_by": "Sort by",
+    "filter": "Filter"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Checkout",
+    "update": "Update Cart",
+    "quantity": "Qty",
+    "remove": "Remove"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Stay Updated",
+      "subtitle": "Subscribe to our newsletter for exclusive offers and new arrivals.",
+      "placeholder": "Your email address",
+      "button": "Subscribe",
+      "success": "Thank you for subscribing!",
+      "error": "Please enter a valid email address"
+    },
+    "links": {
+      "shop": "Shop",
+      "collections": "Collections",
+      "about": "About Us",
+      "contact": "Contact",
+      "shipping": "Shipping & Delivery",
+      "returns": "Returns & Exchanges",
+      "faq": "FAQ",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
+  }
+}
