@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Theme settings",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Primary Color",
+        "default": "#d4af37"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary Color",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text Color",
+        "default": "#333333"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 50,
+        "max": 250,
+        "step": 10,
+        "unit": "px",
+        "label": "Custom logo width",
+        "default": 150
+      },
+      {
+        "type": "link_list",
+        "id": "main_linklist",
+        "label": "Main menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search",
+        "label": "Show search",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "select",
+        "id": "header_style",
+        "label": "Header style",
+        "options": [
+          { "value": "style-1", "label": "Style 1" },
+          { "value": "style-2", "label": "Style 2" }
+        ],
+        "default": "style-1"
+      }
+    ]
+  },
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "text",
+        "id": "footer_title",
+        "label": "Footer title",
+        "default": "Aristial"
+      },
+      {
+        "type": "richtext",
+        "id": "footer_text",
+        "label": "Footer text",
+        "default": "<p>Luxury perfumes crafted with precision and passion.</p>"
+      }
+    ]
+  }
+]
