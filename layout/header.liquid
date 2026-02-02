@@ -1,0 +1,248 @@
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: var(--color-background);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .header.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    max-width: var(--page-width);
+    margin: 0 auto;
+  }
+
+  .header-logo {
+    flex: 0 0 auto;
+  }
+
+  .header-logo img {
+    height: 40px;
+    width: auto;
+  }
+
+  .header-menu {
+    display: flex;
+    gap: 3rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-menu-link {
+    text-decoration: none;
+    color: var(--color-secondary);
+    font-weight: 500;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .header-menu-link:hover {
+    color: var(--color-primary);
+  }
+
+  .header-menu-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease;
+  }
+
+  .header-menu-link:hover::after {
+    width: 100%;
+  }
+
+  .header-icons {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .header-icon {
+    color: var(--color-secondary);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+
+  .header-icon:hover {
+    color: var(--color-primary);
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 1rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--color-secondary);
+    font-size: 2rem;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 989px) {
+    .header-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: var(--color-background);
+      flex-direction: column;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .header-menu.active {
+      display: flex;
+    }
+
+    .mobile-menu-toggle {
+      display: block;
+    }
+
+    .header-wrapper {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<header class="header" id="header">
+  <div class="header-wrapper">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      ☰
+    </button>
+
+    <div class="header-logo">
+      <a href="/" aria-label="Aristial Home">
+        {% if settings.logo != blank %}
+          <img src="{{ settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" width="200" height="40">
+        {% else %}
+          <span style="font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--color-secondary);">
+            Aristial
+          </span>
+        {% endif %}
+      </a>
+    </div>
+
+    <nav class="header-nav">
+      <ul class="header-menu" id="mainMenu">
+        {% for link in linklists.main-menu.links %}
+          <li>
+            <a href="{{ link.url }}" class="header-menu-link">
+              {{ link.title }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="header-icons">
+      {% if settings.show_search %}
+        <a href="/search" class="header-icon" aria-label="Search">
+          🔍
+        </a>
+      {% endif %}
+      
+      <a href="/account" class="header-icon" aria-label="Account">
+        👤
+      </a>
+      
+      <a href="/cart" class="header-icon" aria-label="Cart">
+        🛒
+        <span class="cart-count" id="cartCount">
+          {{ cart.item_count }}
+        </span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const header = document.getElementById('header');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    const cartCount = document.getElementById('cartCount');
+
+    // Sticky header on scroll
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Mobile menu toggle
+    mobileMenuToggle.addEventListener('click', function() {
+      mainMenu.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!mainMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+        mainMenu.classList.remove('active');
+      }
+    });
+
+    // Update cart count
+    function updateCartCount() {
+      fetch('/cart.js')
+        .then(response => response.json())
+        .then(cart => {
+          cartCount.textContent = cart.item_count;
+        });
+    }
+
+    // Update cart count on page load
+    updateCartCount();
+
+    // Listen for cart updates
+    document.addEventListener('cart:updated', updateCartCount);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Enable sticky header",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
