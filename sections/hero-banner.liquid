@@ -1,1 +1,225 @@
-.
+<style>
+  .hero {
+    position: relative;
+    height: 80vh;
+    min-height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .hero-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 2rem;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .hero-subtitle {
+    font-size: 1.8rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-button {
+    padding: 1.5rem 3rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+  }
+
+  .hero-button:hover {
+    background: white;
+    color: black;
+  }
+
+  .hero-button--primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: black;
+  }
+
+  .hero-button--primary:hover {
+    background: transparent;
+    color: white;
+    border-color: white;
+  }
+
+  @media screen and (max-width: 768px) {
+    .hero {
+      height: 60vh;
+      min-height: 400px;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.4rem;
+    }
+
+    .hero-button {
+      padding: 1rem 2rem;
+      min-width: 150px;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+
+<section class="hero">
+  <div class="hero-background">
+    {% if section.settings.hero_image != blank %}
+      {{ section.settings.hero_image | image_url: width: 2000 | image_tag:
+        loading: 'lazy',
+        width: section.settings.hero_image.width,
+        height: section.settings.hero_image.height,
+        alt: section.settings.hero_image.alt
+      }}
+    {% else %}
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 100%; height: 100%;"></div>
+    {% endif %}
+  </div>
+
+  <div class="hero-content">
+    <h1 class="hero-title">{{ section.settings.hero_title | default: 'Aristial Perfumes' }}</h1>
+    <p class="hero-subtitle">{{ section.settings.hero_subtitle | default: 'Experience luxury in every scent. Handcrafted perfumes for the discerning individual.' }}</p>
+    
+    <div class="hero-buttons">
+      <a href="{{ section.settings.button1_link | default: '/collections/all' }}" class="hero-button hero-button--primary">
+        {{ section.settings.button1_text | default: 'Shop Now' }}
+      </a>
+      <a href="{{ section.settings.button2_link | default: '/pages/collections' }}" class="hero-button">
+        {{ section.settings.button2_text | default: 'Explore Collections' }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add parallax effect to hero
+    const hero = document.querySelector('.hero');
+    
+    window.addEventListener('scroll', function() {
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * 0.5;
+      
+      if (hero) {
+        hero.style.transform = `translate3d(0, ${rate}px, 0)`;
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "Aristial Perfumes"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle",
+      "default": "Experience luxury in every scent. Handcrafted perfumes for the discerning individual."
+    },
+    {
+      "type": "text",
+      "id": "button1_text",
+      "label": "Button 1 Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button1_link",
+      "label": "Button 1 Link"
+    },
+    {
+      "type": "text",
+      "id": "button2_text",
+      "label": "Button 2 Text",
+      "default": "Explore Collections"
+    },
+    {
+      "type": "url",
+      "id": "button2_link",
+      "label": "Button 2 Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}
